@@ -1,4 +1,5 @@
 from datetime import datetime as dt
+from time import time
 
 import discord
 
@@ -63,7 +64,7 @@ class ConnectEvent(utils.Cog):
         application_id = self.bot.application_id
         await self.send_webhook(
             "shard_connect",
-            f"Shard connect event just pinged for shard ID `{shard_id}` - {dt.utcnow().strftime('%X.%f')}",
+            f"Shard connect event just pinged for shard ID `{shard_id}` - <t:{int(time())}>",
             f"{try_username(self.bot)} - Shard Connect",
             f"Sent webhook for on_shard_connect event in shard `{shard_id}`",
         )
@@ -77,7 +78,7 @@ class ConnectEvent(utils.Cog):
         application_id = self.bot.application_id
         await self.send_webhook(
             "shard_ready",
-            f"Shard ready event just pinged for shard ID `{shard_id}` - {dt.utcnow().strftime('%X.%f')}",
+            f"Shard ready event just pinged for shard ID `{shard_id}` - <t:{int(time())}>",
             f"{try_username(self.bot)} - Shard Ready",
             f"Sent webhook for on_shard_ready event in shard `{shard_id}`",
         )
@@ -91,7 +92,7 @@ class ConnectEvent(utils.Cog):
         application_id = self.bot.application_id
         await self.send_webhook(
             "bot_ready",
-            f"Bot ready event just pinged for instance with shards `{self.bot.shard_ids}` - {dt.utcnow().strftime('%X.%f')}",
+            f"Bot ready event just pinged for instance with shards `{self.bot.shard_ids}` - <t:{int(time())}>",
             f"{try_username(self.bot)} - Ready",
             "Sent webhook for on_ready event",
         )
@@ -105,7 +106,7 @@ class ConnectEvent(utils.Cog):
         application_id = self.bot.application_id
         await self.send_webhook(
             "shard_disconnect",
-            f"Shard disconnect event just pinged for shard ID `{shard_id}` - {dt.utcnow().strftime('%X.%f')}",
+            f"Shard disconnect event just pinged for shard ID `{shard_id}` - <t:{int(time())}>",
             f"{try_username(self.bot)} - Shard Disconnect",
             f"Sent webhook for on_shard_disconnect event in shard `{shard_id}`",
         )
@@ -119,7 +120,7 @@ class ConnectEvent(utils.Cog):
         application_id = self.bot.application_id
         await self.send_webhook(
             "bot_disconnect",
-            f"Bot disconnect event just pinged for instance with shards `{self.bot.shard_ids or [0]}` - {dt.utcnow().strftime('%X.%f')}",
+            f"Bot disconnect event just pinged for instance with shards `{self.bot.shard_ids or [0]}` - <t:{int(time())}>",
             f"{try_username(self.bot)} - Disconnect",
             "Sent webhook for on_disconnect event",
         )
@@ -133,7 +134,7 @@ class ConnectEvent(utils.Cog):
         application_id = self.bot.application_id
         await self.send_webhook(
             "shard_connect",
-            f"Shard resumed event just pinged for shard ID `{shard_id}` - {dt.utcnow().strftime('%X.%f')}",
+            f"Shard resumed event just pinged for shard ID `{shard_id}` - <t:{int(time())}>",
             f"{try_username(self.bot)} - Shard Resumed",
             f"Sent webhook for on_shard_resumed event in shard `{shard_id}`",
         )
@@ -147,7 +148,7 @@ class ConnectEvent(utils.Cog):
         application_id = self.bot.application_id
         await self.send_webhook(
             "bot_connect",
-            f"Bot resumed event just pinged for instance with shards `{self.bot.shard_ids or [0]}` - {dt.utcnow().strftime('%X.%f')}",
+            f"Bot resumed event just pinged for instance with shards `{self.bot.shard_ids or [0]}` - <t:{int(time())}>",
             f"{try_username(self.bot)} - Resumed",
             "Sent webhook for on_resumed event",
         )
@@ -176,9 +177,9 @@ class ConnectEvent(utils.Cog):
         if guild.me:
             try:
                 member_count = guild.member_count
-                text = f"Removed from guild - ``{guild.name}``/``{guild.id}`` (`{member_count}` members; `{utils.TimeValue((dt.utcnow() - guild.me.joined_at).total_seconds()).clean_full}` guild duration)"
+                text = f"Removed from guild - ``{guild.name}``/``{guild.id}`` (`{member_count}` members; `{utils.TimeValue((dt.utcnow() - guild.me.joined_at).total_seconds()).clean_full}` guild duration) - <t:{int(time())}>"
             except Exception:
-                text = f"Removed from guild - ``{guild.name}``/``{guild.id}`` (`{utils.TimeValue((dt.utcnow() - guild.me.joined_at).total_seconds()).clean_full}` guild duration)"
+                text = f"Removed from guild - ``{guild.name}``/``{guild.id}`` (`{utils.TimeValue((dt.utcnow() - guild.me.joined_at).total_seconds()).clean_full}` guild duration) - <t:{int(time())}>"
             await self.send_webhook(
                 "guild_remove",
                 text,
