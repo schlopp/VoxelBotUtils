@@ -26,26 +26,26 @@ class Embeddify:
 
     @classmethod
     async def send(
-            cls,
-            dest: Destinations,
-            content: typing.Optional[str],
-            **kwargs,
-            ) -> discord.Message:
+        cls,
+        dest: Destinations,
+        content: typing.Optional[str],
+        **kwargs,
+    ) -> discord.Message:
         return await dest.send(**cls.get_embeddify(dest, content, **kwargs))
 
     @classmethod
     def get_embeddify(
-            cls,
-            dest: Destinations,
-            content: typing.Optional[str] = MISSING,
-            *,
-            embed: discord.Embed = MISSING,
-            embeds: typing.List[discord.Embed] = MISSING,
-            file: discord.File = MISSING,
-            embeddify: bool = MISSING,
-            image_url: str = MISSING,
-            **kwargs,
-            ) -> dict:
+        cls,
+        dest: Destinations,
+        content: typing.Optional[str] = MISSING,
+        *,
+        embed: discord.Embed = MISSING,
+        embeds: typing.List[discord.Embed] = MISSING,
+        file: discord.File = MISSING,
+        embeddify: bool = MISSING,
+        image_url: str = MISSING,
+        **kwargs,
+    ) -> dict:
         """
         Embeddify your given content.
         """
@@ -69,9 +69,9 @@ class Embeddify:
         if embed and embeds:
             raise ValueError("Can't set embeds and embed")
         if embed:
-            data['embeds'].append(embed)
+            data["embeds"].append(embed)
         elif embeds:
-            data['embeds'].extend(embeds)
+            data["embeds"].extend(embeds)
 
         # If embeddify isn't set, grab from the config
         if embeddify is MISSING and cls.bot:
@@ -103,7 +103,9 @@ class Embeddify:
             # Check permissions
             if isinstance(channel, discord.TextChannel):
                 channel_permissions: discord.Permissions = channel.permissions_for(dest.guild.me)  # type: ignore
-                can_send_embeds = discord.Permissions(embed_links=True).is_subset(channel_permissions)
+                can_send_embeds = discord.Permissions(embed_links=True).is_subset(
+                    channel_permissions
+                )
             else:
                 can_send_embeds = True
 
@@ -116,7 +118,9 @@ class Embeddify:
 
         # Okay it's embed time
         if cls.bot:
-            colour = discord.Colour.random() or cls.bot.config.get("embed", dict()).get("colour", 0)
+            colour = discord.Colour.random() or cls.bot.config.get("embed", dict()).get(
+                "colour", 0
+            )
         else:
             colour = discord.Colour.random()
         embed = discord.Embed(
@@ -129,13 +133,22 @@ class Embeddify:
         # Add image
         if image_url not in (None, MISSING):
             embed.set_image(url=image_url)
-        elif file not in (None, MISSING) and file and file.filename and file.filename.endswith((".png", ".jpg", ".jpeg", ".webm", ".gif")):
+        elif (
+            file not in (None, MISSING)
+            and file
+            and file.filename
+            and file.filename.endswith((".png", ".jpg", ".jpeg", ".webm", ".gif"))
+        ):
             data["file"] = file
             embed.set_image(url=f"attachment://{file.filename}")
 
         # Reset content
         if cls.bot:
-            content = cls.bot.config.get("embed", dict()).get("content", "").format(bot=cls.bot)
+            content = (
+                cls.bot.config.get("embed", dict())
+                .get("content", "")
+                .format(bot=cls.bot)
+            )
         else:
             content = None
         if not content:
@@ -148,7 +161,9 @@ class Embeddify:
         else:
             author_data = {}
         if author_data.get("enabled", False):
-            name = author_data.get("name", "").format(bot=cls.bot) or discord.Embed.Empty
+            name = (
+                author_data.get("name", "").format(bot=cls.bot) or discord.Embed.Empty
+            )
             url = author_data.get("url", "").format(bot=cls.bot) or discord.Embed.Empty
             try:
                 icon_url: typing.Optional[str] = cls.bot.user.display_avatar.url  # type: ignore
@@ -157,5 +172,5 @@ class Embeddify:
             embed.set_author(name=name, url=url, icon_url=icon_url)
 
         # And we're done and sick and sexy
-        data['embeds'].insert(0, embed)
+        data["embeds"].insert(0, embed)
         return data

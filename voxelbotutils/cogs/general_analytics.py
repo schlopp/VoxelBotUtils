@@ -25,7 +25,10 @@ class Analytics(vbu.Cog):
         self.post_discordbotlist_guild_count.cancel()
 
     def get_effective_guild_count(self) -> int:
-        return int((len(self.bot.guilds) / len(self.bot.shard_ids or [0])) * (self.bot.shard_count or 1))
+        return int(
+            (len(self.bot.guilds) / len(self.bot.shard_ids or [0]))
+            * (self.bot.shard_count or 1)
+        )
 
     @tasks.loop(minutes=5)
     async def post_topgg_guild_count(self):
@@ -38,19 +41,19 @@ class Analytics(vbu.Cog):
             return
 
         # Only post if there's actually a DBL token set
-        if not self.bot.config.get('bot_listing_api_keys', {}).get('topgg_token'):
+        if not self.bot.config.get("bot_listing_api_keys", {}).get("topgg_token"):
             self.logger.warning("No Top.gg token has been provided")
             self.post_topgg_guild_count.stop()
             return
 
-        url = f'https://top.gg/api/bots/{self.bot.user.id}/stats'
+        url = f"https://top.gg/api/bots/{self.bot.user.id}/stats"
         data = {
-            'server_count': self.get_effective_guild_count(),
-            'shard_count': self.bot.shard_count or 1,
-            'shard_id': 0,
+            "server_count": self.get_effective_guild_count(),
+            "shard_count": self.bot.shard_count or 1,
+            "shard_id": 0,
         }
         headers = {
-            'Authorization': self.bot.config['bot_listing_api_keys']['topgg_token']
+            "Authorization": self.bot.config["bot_listing_api_keys"]["topgg_token"]
         }
         self.logger.info(f"Sending POST request to Top.gg with data {json.dumps(data)}")
         async with self.bot.session.post(url, json=data, headers=headers):
@@ -67,23 +70,33 @@ class Analytics(vbu.Cog):
         """
 
         # Only shard 0 can post
-        if self.bot.shard_count and self.bot.shard_count > 1 and 0 not in self.bot.shard_ids:
+        if (
+            self.bot.shard_count
+            and self.bot.shard_count > 1
+            and 0 not in self.bot.shard_ids
+        ):
             return
 
         # Only post if there's actually a DBL token set
-        if not self.bot.config.get('bot_listing_api_keys', {}).get('discordbotlist_token'):
+        if not self.bot.config.get("bot_listing_api_keys", {}).get(
+            "discordbotlist_token"
+        ):
             self.logger.warning("No DiscordBotList.com token has been provided")
             self.post_discordbotlist_guild_count.stop()
             return
 
-        url = f'https://discordbotlist.com/api/v1/bots/{self.bot.user.id}/stats'
+        url = f"https://discordbotlist.com/api/v1/bots/{self.bot.user.id}/stats"
         data = {
-            'guilds': self.get_effective_guild_count(),
+            "guilds": self.get_effective_guild_count(),
         }
         headers = {
-            'Authorization': self.bot.config['bot_listing_api_keys']['discordbotlist_token']
+            "Authorization": self.bot.config["bot_listing_api_keys"][
+                "discordbotlist_token"
+            ]
         }
-        self.logger.info(f"Sending POST request to DiscordBotList.com with data {json.dumps(data)}")
+        self.logger.info(
+            f"Sending POST request to DiscordBotList.com with data {json.dumps(data)}"
+        )
         async with self.bot.session.post(url, json=data, headers=headers):
             pass
 
@@ -98,10 +111,16 @@ class Analytics(vbu.Cog):
         """
 
         # Only shard 0 can post
-        if self.bot.shard_count and self.bot.shard_count > 1 and 0 not in self.bot.shard_ids:
+        if (
+            self.bot.shard_count
+            and self.bot.shard_count > 1
+            and 0 not in self.bot.shard_ids
+        ):
             return
         async with self.bot.stats() as stats:
-            stats.gauge("discord.stats.guild_count", value=self.get_effective_guild_count())
+            stats.gauge(
+                "discord.stats.guild_count", value=self.get_effective_guild_count()
+            )
             stats.gauge("discord.stats.shard_count", value=self.bot.shard_count or 1)
 
     @post_statsd_guild_count.before_loop
@@ -116,7 +135,7 @@ class Analytics(vbu.Cog):
 
         # Get the event opcode
         try:
-            event_id = json.loads(payload)['op']
+            event_id = json.loads(payload)["op"]
         except Exception:
             return  # there isn't one somehow but okay
 
@@ -147,7 +166,9 @@ class Analytics(vbu.Cog):
 
         async with self.bot.stats() as stats:
             try:
-                stats.increment("discord.gateway.receive", tags={"event_name": payload['t']})
+                stats.increment(
+                    "discord.gateway.receive", tags={"event_name": payload["t"]}
+                )
             except KeyError:
                 pass
 

@@ -25,7 +25,6 @@ if typing.TYPE_CHECKING:
 
 
 class _FakeConverter(object):
-
     def __init__(self, callback):
         self.callback = callback
 
@@ -39,12 +38,13 @@ class Converter(object):
     """
 
     def __init__(
-            self,
-            prompt: str,
-            checks: typing.List[Check] = None,
-            converter: AnyConverter = str,
-            components: discord.ui.MessageComponents = None,
-            timeout_message: str = None):
+        self,
+        prompt: str,
+        checks: typing.List[Check] = None,
+        converter: AnyConverter = str,
+        components: discord.ui.MessageComponents = None,
+        timeout_message: str = None,
+    ):
         """
         Args:
             prompt (str): The message that should be sent to the user when asking for the convertable.
@@ -91,13 +91,17 @@ class Converter(object):
         """
 
         # Ask the user for an input
-        messages_to_delete = messages_to_delete if messages_to_delete is not None else list()
+        messages_to_delete = (
+            messages_to_delete if messages_to_delete is not None else list()
+        )
 
         # The input will be an interaction - branch off here
         if self.components:
 
             # Send message to respond to
-            sent_message = await ctx.interaction.followup.send(self.prompt, components=self.components)
+            sent_message = await ctx.interaction.followup.send(
+                self.prompt, components=self.components
+            )
             messages_to_delete.append(sent_message)
 
             # Set up checks
@@ -107,11 +111,14 @@ class Converter(object):
                         return False
                     if payload.user.id == ctx.interaction.user.id:
                         return True
-                    ctx.bot.loop.create_task(payload.respond(
-                        f"Only {ctx.interaction.user.mention} can interact with these buttons.",
-                        ephemeral=True,
-                    ))
+                    ctx.bot.loop.create_task(
+                        payload.respond(
+                            f"Only {ctx.interaction.user.mention} can interact with these buttons.",
+                            ephemeral=True,
+                        )
+                    )
                     return False
+
                 return button_check
 
             # Wait for the user to click a button
@@ -146,10 +153,13 @@ class Converter(object):
             # Wait for the button to be clicked
             button_click: discord.Interaction = await ctx.bot.wait_for(
                 "component_interaction",
-                check=lambda i: i.user.id == ctx.interaction.user.id and i.custom_id == button.custom_id,
+                check=lambda i: i.user.id == ctx.interaction.user.id
+                and i.custom_id == button.custom_id,
                 timeout=60.0,
             )
-            ctx.interaction = button_click  # Don't defer this one so we can send a modal
+            ctx.interaction = (
+                button_click  # Don't defer this one so we can send a modal
+            )
 
             # Wait for an input
             modal = discord.ui.Modal(
@@ -165,7 +175,8 @@ class Converter(object):
             await button_click.response.send_modal(modal)
             modal_submission: discord.Interaction = await ctx.bot.wait_for(
                 "modal_submit",
-                check=lambda i: i.user.id == ctx.interaction.user.id and i.custom_id == modal.custom_id,
+                check=lambda i: i.user.id == ctx.interaction.user.id
+                and i.custom_id == modal.custom_id,
                 timeout=60.0,
             )
             ctx.interaction = modal_submission

@@ -38,13 +38,14 @@ class CascadingLogger(logging.getLoggerClass()):
 
 
 logging.setLoggerClass(CascadingLogger)
-logger = logging.getLogger('vbu')
+logger = logging.getLogger("vbu")
 
 
 def set_log_level(
-        logger_to_change: typing.Union[logging.Logger, str],
-        log_level: str,
-        minimum_level: int = None) -> None:
+    logger_to_change: typing.Union[logging.Logger, str],
+    log_level: str,
+    minimum_level: int = None,
+) -> None:
     """
     Set a logger to a default log level.
 
@@ -73,7 +74,9 @@ def set_log_level(
     try:
         level = getattr(logging, log_level.upper())
     except AttributeError:
-        raise ValueError(f"The log level {log_level.upper()} wasn't found in the logging module")
+        raise ValueError(
+            f"The log level {log_level.upper()} wasn't found in the logging module"
+        )
 
     # Set the level
     if minimum_level is not None:
@@ -82,7 +85,9 @@ def set_log_level(
         logger_to_change.setLevel(level)
 
 
-def validate_sharding_information(args: argparse.Namespace) -> typing.Optional[typing.List[int]]:
+def validate_sharding_information(
+    args: argparse.Namespace,
+) -> typing.Optional[typing.List[int]]:
     """
     Validate the given shard information and make sure that what's passed in is accurate.
 
@@ -144,9 +149,11 @@ class LogFilter(logging.Filter):
 
 
 def _set_default_log_level(logger_name, log_filter, formatter, loglevel):
-    logger = logging.getLogger(logger_name) if isinstance(logger_name, str) else logger_name
+    logger = (
+        logging.getLogger(logger_name) if isinstance(logger_name, str) else logger_name
+    )
 
-    set_log_level(logger, 'DEBUG')
+    set_log_level(logger, "DEBUG")
 
     stdout_logger = logging.StreamHandler(sys.stdout)
     stdout_logger.addFilter(log_filter)
@@ -180,20 +187,24 @@ def set_default_log_levels(args: argparse.Namespace) -> None:
 
     # formatter = logging.Formatter('%(asctime)s [%(levelname)s][%(name)s] %(message)s')
     # formatter = logging.Formatter('{asctime} | {levelname: <8} | {module}:{funcName}:{lineno} - {message}', style='{')
-    formatter = logging.Formatter('{asctime} | {levelname: <8} | {name}: {message}', style='{')
+    formatter = logging.Formatter(
+        "{asctime} | {levelname: <8} | {name}: {message}", style="{"
+    )
     log_filter = LogFilter(logging.WARNING)
     create_subclassed_loggers()
     loggers = [
-        'vbu',
-        'discord',
-        'aiohttp',
-        'aiohttp.access',
-        'upgradechat',
+        "vbu",
+        "discord",
+        "aiohttp",
+        "aiohttp.access",
+        "upgradechat",
     ]
     for i in loggers:
         if i is None:
             continue
-        _set_default_log_level(i, log_filter, formatter, getattr(args, "loglevel", "ERROR"))
+        _set_default_log_level(
+            i, log_filter, formatter, getattr(args, "loglevel", "ERROR")
+        )
 
 
 async def create_initial_database(db: DatabaseWrapper) -> bool:
@@ -210,14 +221,14 @@ async def create_initial_database(db: DatabaseWrapper) -> bool:
 
     # Get the statements
     create_table_statements = []
-    current_line = ''
-    for line in data.split('\n'):
-        if line.lstrip().startswith('--'):
+    current_line = ""
+    for line in data.split("\n"):
+        if line.lstrip().startswith("--"):
             continue
-        current_line += line + '\n'
-        if line.endswith(';') and not line.startswith(' '):
+        current_line += line + "\n"
+        if line.endswith(";") and not line.startswith(" "):
             create_table_statements.append(current_line.strip())
-            current_line = ''
+            current_line = ""
 
     # Let's do it baybeee
     for i in create_table_statements:
@@ -236,9 +247,11 @@ async def start_database_pool(config: dict) -> None:
     # Connect the database pool
     logger.info("Creating database pool")
     try:
-        await DatabaseWrapper.create_pool(config['database'])
+        await DatabaseWrapper.create_pool(config["database"])
     except KeyError:
-        raise Exception("KeyError creating database pool - is there a 'database' object in the config?")
+        raise Exception(
+            "KeyError creating database pool - is there a 'database' object in the config?"
+        )
     except ConnectionRefusedError:
         raise Exception(
             "ConnectionRefusedError creating database pool - did you set the right "
@@ -260,9 +273,11 @@ async def start_redis_pool(config: dict) -> None:
     # Connect the redis pool
     logger.info("Creating redis pool")
     try:
-        await RedisConnection.create_pool(config['redis'])
+        await RedisConnection.create_pool(config["redis"])
     except KeyError:
-        raise KeyError("KeyError creating redis pool - is there a 'redis' object in the config?")
+        raise KeyError(
+            "KeyError creating redis pool - is there a 'redis' object in the config?"
+        )
     except ConnectionRefusedError:
         raise ConnectionRefusedError(
             "ConnectionRefusedError creating redis pool - did you set the right "
@@ -306,7 +321,9 @@ class EventLoopCallbackHandler:
     @classmethod
     async def send_error_webhook(cls, error: Exception):
         # Ping unhandled errors to the owners and to the event webhook
-        error_string = "".join(traceback.format_exception(None, error, error.__traceback__))
+        error_string = "".join(
+            traceback.format_exception(None, error, error.__traceback__)
+        )
         file_handle = io.StringIO(error_string + "\n")
         error_text = (
             f"Error `{error}` encountered.\nGuild `None`, channel `None`, "
@@ -322,7 +339,7 @@ class EventLoopCallbackHandler:
             return
 
         # DM to owners
-        if cls.bot.config.get('dm_uncaught_errors', False):
+        if cls.bot.config.get("dm_uncaught_errors", False):
             for owner_id in cls.bot.owner_ids:
                 owner = cls.bot.get_user(owner_id) or await cls.bot.fetch_user(owner_id)
                 file_handle.seek(0)
@@ -330,7 +347,9 @@ class EventLoopCallbackHandler:
                 await owner.send(error_text, file=file)
 
         # Ping to the webook
-        event_webhook: typing.Optional[discord.Webhook] = cls.bot.get_event_webhook("unhandled_error")
+        event_webhook: typing.Optional[discord.Webhook] = cls.bot.get_event_webhook(
+            "unhandled_error"
+        )
         if not event_webhook:
             return
         try:
@@ -342,7 +361,10 @@ class EventLoopCallbackHandler:
         except Exception:
             username = cls.bot.application_id
             if username is None:
-                username = cls.bot.config.get("oauth", {}).get("client_id", None) or "Application ID not found"
+                username = (
+                    cls.bot.config.get("oauth", {}).get("client_id", None)
+                    or "Application ID not found"
+                )
         if event_webhook:
             file_handle.seek(0)
             try:
@@ -355,7 +377,9 @@ class EventLoopCallbackHandler:
                     allowed_mentions=discord.AllowedMentions.none(),
                 )
             except discord.HTTPException as e:
-                cls.bot.logger.error(f"Failed to send webhook for event unhandled_error - {e}")
+                cls.bot.logger.error(
+                    f"Failed to send webhook for event unhandled_error - {e}"
+                )
 
 
 def set_event_loop():
@@ -367,12 +391,13 @@ def set_event_loop():
     # Set up uvloop if we're on Linux
     try:
         import uvloop
+
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     except ImportError:
         pass
 
     # If we're on Windows, set up a different event loop policy
-    if sys.platform.startswith('win32'):
+    if sys.platform.startswith("win32"):
         if sys.version_info[0] == 3 and sys.version_info[1] >= 8:
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         else:
@@ -404,7 +429,9 @@ def run_bot(args: argparse.Namespace) -> None:
 
     # And run file
     shard_ids = validate_sharding_information(args)
-    bot = Bot(shard_count=args.shardcount, shard_ids=shard_ids, config_file=args.config_file)
+    bot = Bot(
+        shard_count=args.shardcount, shard_ids=shard_ids, config_file=args.config_file
+    )
     loop = bot.loop
     EventLoopCallbackHandler.bot = bot
 
@@ -413,17 +440,17 @@ def run_bot(args: argparse.Namespace) -> None:
     set_default_log_levels(args)
 
     # Connect the database pool
-    if bot.config.get('database', {}).get('enabled', False):
+    if bot.config.get("database", {}).get("enabled", False):
         db_connect_task = start_database_pool(bot.config)
         loop.run_until_complete(db_connect_task)
 
     # Connect the redis pool
-    if bot.config.get('redis', {}).get('enabled', False):
+    if bot.config.get("redis", {}).get("enabled", False):
         re_connect = start_redis_pool(bot.config)
         loop.run_until_complete(re_connect)
 
     # Load the bot's extensions
-    logger.info('Loading extensions... ')
+    logger.info("Loading extensions... ")
     bot.load_all_extensions()
 
     # Run the bot
@@ -435,14 +462,18 @@ def run_bot(args: argparse.Namespace) -> None:
         loop.run_until_complete(bot.close())
 
     # We're now done running the bot, time to clean up and close
-    if bot.config.get('database', {}).get('enabled', False):
+    if bot.config.get("database", {}).get("enabled", False):
         logger.info("Closing database pool")
         try:
             if DatabaseWrapper.pool:
-                loop.run_until_complete(asyncio.wait_for(DatabaseWrapper.pool.close(), timeout=30.0))
+                loop.run_until_complete(
+                    asyncio.wait_for(DatabaseWrapper.pool.close(), timeout=30.0)
+                )
         except asyncio.TimeoutError:
-            logger.error("Couldn't gracefully close the database connection pool within 30 seconds")
-    if bot.config.get('redis', {}).get('enabled', False):
+            logger.error(
+                "Couldn't gracefully close the database connection pool within 30 seconds"
+            )
+    if bot.config.get("redis", {}).get("enabled", False):
         logger.info("Closing redis pool")
         RedisConnection.pool.close()
 
@@ -462,6 +493,7 @@ def run_interactions(args: argparse.Namespace) -> None:
     """
 
     from aiohttp.web import Application, AppRunner, TCPSite
+
     os.chdir(args.bot_directory)
     set_event_loop()
 
@@ -475,17 +507,17 @@ def run_interactions(args: argparse.Namespace) -> None:
     set_default_log_levels(args)
 
     # Connect the database pool
-    if bot.config.get('database', {}).get('enabled', False):
+    if bot.config.get("database", {}).get("enabled", False):
         db_connect_task = start_database_pool(bot.config)
         loop.run_until_complete(db_connect_task)
 
     # Connect the redis pool
-    if bot.config.get('redis', {}).get('enabled', False):
+    if bot.config.get("redis", {}).get("enabled", False):
         re_connect = start_redis_pool(bot.config)
         loop.run_until_complete(re_connect)
 
     # Load the bot's extensions
-    logger.info('Loading extensions... ')
+    logger.info("Loading extensions... ")
     bot.load_all_extensions()
 
     # Run the bot
@@ -498,7 +530,11 @@ def run_interactions(args: argparse.Namespace) -> None:
 
     # Create the webserver
     app = Application(loop=asyncio.get_event_loop(), debug=args.debug)
-    app.router.add_routes(commands.get_interaction_route_table(bot, bot.config.get("pubkey", ""), path=args.path))
+    app.router.add_routes(
+        commands.get_interaction_route_table(
+            bot, bot.config.get("pubkey", ""), path=args.path
+        )
+    )
 
     # Start the HTTP server
     logger.info("Creating webserver...")
@@ -520,14 +556,18 @@ def run_interactions(args: argparse.Namespace) -> None:
     # We're now done running the webserver, time to clean up and close
     if websocket_task:
         websocket_task.cancel()
-    if bot.config.get('database', {}).get('enabled', False):
+    if bot.config.get("database", {}).get("enabled", False):
         logger.info("Closing database pool")
         try:
             if DatabaseWrapper.pool:
-                loop.run_until_complete(asyncio.wait_for(DatabaseWrapper.pool.close(), timeout=30.0))
+                loop.run_until_complete(
+                    asyncio.wait_for(DatabaseWrapper.pool.close(), timeout=30.0)
+                )
         except asyncio.TimeoutError:
-            logger.error("Couldn't gracefully close the database connection pool within 30 seconds")
-    if bot.config.get('redis', {}).get('enabled', False):
+            logger.error(
+                "Couldn't gracefully close the database connection pool within 30 seconds"
+            )
+    if bot.config.get("redis", {}).get("enabled", False):
         logger.info("Closing redis pool")
         RedisConnection.pool.close()
 
@@ -566,18 +606,22 @@ def run_website(args: argparse.Namespace) -> None:
 
     # Create website object - don't start based on argv
     app = Application(loop=asyncio.get_event_loop(), debug=args.debug)
-    app['static_root_url'] = '/static'
-    for route in config['routes']:
+    app["static_root_url"] = "/static"
+    for route in config["routes"]:
         module = importlib.import_module(f"website.{route}", "temp")
         app.router.add_routes(module.routes)
-    app.router.add_static('/static', os.getcwd() + '/website/static', append_version=True)
+    app.router.add_static(
+        "/static", os.getcwd() + "/website/static", append_version=True
+    )
 
     # Add middlewares
     if args.debug:
         session_setup(app, SimpleCookieStorage(max_age=1_000_000))
     else:
         session_setup(app, ECS(os.urandom(32), max_age=1_000_000))
-    jinja_env = jinja_setup(app, loader=FileSystemLoader(os.getcwd() + '/website/templates'))
+    jinja_env = jinja_setup(
+        app, loader=FileSystemLoader(os.getcwd() + "/website/templates")
+    )
 
     # Add our jinja env filters
     def regex_replace(string, find, replace):
@@ -593,16 +637,17 @@ def run_website(args: argparse.Namespace) -> None:
         return format(hex(int(string))[2:], "0>6")
 
     def to_markdown(string):
-        return markdown.markdown(string, extensions=['extra'])
+        return markdown.markdown(string, extensions=["extra"])
 
     def display_mentions(string, users):
         def get_display_name(group):
-            user = users.get(group.group('userid'))
+            user = users.get(group.group("userid"))
             if not user:
-                return 'unknown-user'
-            return user.get('display_name') or user.get('username')
+                return "unknown-user"
+            return user.get("display_name") or user.get("username")
+
         return re.sub(
-            '(?:<|(?:&lt;))@!?(?P<userid>\\d{16,23})(?:>|(?:&gt;))',
+            "(?:<|(?:&lt;))@!?(?P<userid>\\d{16,23})(?:>|(?:&gt;))",
             lambda g: f'<span class="chatlog__mention">@{get_display_name(g)}</span>',
             string,
             re.IGNORECASE | re.MULTILINE,
@@ -615,6 +660,7 @@ def run_website(args: argparse.Namespace) -> None:
                 f'.{"gif" if group.group("animated") else "png"}" alt="Discord custom emoji: '
                 f'{group.group("name")}" style="height: 1em; width: auto;">'
             )
+
         return re.sub(
             r"(?P<emoji>(?:<|&lt;)(?P<animated>a)?:(?P<name>\w+):(?P<id>\d+)(?:>|&gt;))",
             get_html,
@@ -622,40 +668,42 @@ def run_website(args: argparse.Namespace) -> None:
             re.IGNORECASE | re.MULTILINE,
         )
 
-    jinja_env.filters['regex_replace'] = regex_replace
-    jinja_env.filters['escape_text'] = escape_text
-    jinja_env.filters['timestamp'] = timestamp
-    jinja_env.filters['int_to_hex'] = int_to_hex
-    jinja_env.filters['markdown'] = to_markdown
-    jinja_env.filters['display_mentions'] = display_mentions
-    jinja_env.filters['display_emojis'] = display_emojis
+    jinja_env.filters["regex_replace"] = regex_replace
+    jinja_env.filters["escape_text"] = escape_text
+    jinja_env.filters["timestamp"] = timestamp
+    jinja_env.filters["int_to_hex"] = int_to_hex
+    jinja_env.filters["markdown"] = to_markdown
+    jinja_env.filters["display_mentions"] = display_mentions
+    jinja_env.filters["display_emojis"] = display_emojis
 
     # Add our connections and their loggers
-    app['database'] = DatabaseWrapper
-    app['redis'] = RedisConnection
-    app['logger'] = logger.getChild("route")
-    app['stats'] = StatsdConnection
+    app["database"] = DatabaseWrapper
+    app["redis"] = RedisConnection
+    app["logger"] = logger.getChild("route")
+    app["stats"] = StatsdConnection
 
     # Add our config
-    app['config'] = config
+    app["config"] = config
 
     loop = app.loop
 
     # Connect the database pool
-    if app['config'].get('database', {}).get('enabled', False):
-        db_connect_task = start_database_pool(app['config'])
+    if app["config"].get("database", {}).get("enabled", False):
+        db_connect_task = start_database_pool(app["config"])
         loop.run_until_complete(db_connect_task)
 
     # Connect the redis pool
-    if app['config'].get('redis', {}).get('enabled', False):
-        re_connect = start_redis_pool(app['config'])
+    if app["config"].get("redis", {}).get("enabled", False):
+        re_connect = start_redis_pool(app["config"])
         loop.run_until_complete(re_connect)
 
     # Add our bots
-    app['bots'] = {}
-    for index, (bot_name, bot_config_location) in enumerate(config.get('discord_bot_configs', dict()).items()):
+    app["bots"] = {}
+    for index, (bot_name, bot_config_location) in enumerate(
+        config.get("discord_bot_configs", dict()).items()
+    ):
         bot = Bot(f"./config/{bot_config_location}")
-        app['bots'][bot_name] = bot
+        app["bots"][bot_name] = bot
         if index == 0:
             set_default_log_levels(args)
         try:
@@ -684,14 +732,18 @@ def run_website(args: argparse.Namespace) -> None:
 
     # We're now done running the bot, time to clean up and close
     loop.run_until_complete(application.cleanup())
-    if config.get('database', {}).get('enabled', False):
+    if config.get("database", {}).get("enabled", False):
         logger.info("Closing database pool")
         try:
             if DatabaseWrapper.pool:
-                loop.run_until_complete(asyncio.wait_for(DatabaseWrapper.pool.close(), timeout=30.0))
+                loop.run_until_complete(
+                    asyncio.wait_for(DatabaseWrapper.pool.close(), timeout=30.0)
+                )
         except asyncio.TimeoutError:
-            logger.error("Couldn't gracefully close the database connection pool within 30 seconds")
-    if config.get('redis', {}).get('enabled', False):
+            logger.error(
+                "Couldn't gracefully close the database connection pool within 30 seconds"
+            )
+    if config.get("redis", {}).get("enabled", False):
         logger.info("Closing redis pool")
         RedisConnection.pool.close()
 
@@ -749,17 +801,17 @@ def run_shell(args: argparse.Namespace) -> None:
     set_default_log_levels(args)
 
     # Connect the database pool
-    if bot.config.get('database', {}).get('enabled', False):
+    if bot.config.get("database", {}).get("enabled", False):
         db_connect_task = start_database_pool(bot.config)
         loop.run_until_complete(db_connect_task)
 
     # Connect the redis pool
-    if bot.config.get('redis', {}).get('enabled', False):
+    if bot.config.get("redis", {}).get("enabled", False):
         re_connect = start_redis_pool(bot.config)
         loop.run_until_complete(re_connect)
 
     # Load the bot's extensions
-    logger.info('Loading extensions... ')
+    logger.info("Loading extensions... ")
     bot.load_all_extensions()
 
     # Set up the default env
@@ -769,12 +821,13 @@ def run_shell(args: argparse.Namespace) -> None:
     import textwrap
     import traceback
     import re
+
     env = {
-        'bot': bot,
-        'vbu': vbu,
-        'discord': discord,
-        'commands': commands,
-        'ctx': PrintContext(bot),
+        "bot": bot,
+        "vbu": vbu,
+        "discord": discord,
+        "commands": commands,
+        "ctx": PrintContext(bot),
     }
 
     # Run the bot
@@ -792,10 +845,13 @@ def run_shell(args: argparse.Namespace) -> None:
 
             # See if they want to save that to a var
             var_name = None
-            if (match := re.search(r"^([a-zA-Z_][a-zA-Z0-9_\.]*) ?=", line)):
+            if match := re.search(r"^([a-zA-Z_][a-zA-Z0-9_\.]*) ?=", line):
                 var_name = match.group(1)
                 line = line.replace(match.group(0), "").lstrip()
-            elif (match := re.search(r"^(?:from (?:[a-zA-Z_][a-zA-Z0-9_]*) )?import ([a-zA-Z_][a-zA-Z0-9_]*)", line)):
+            elif match := re.search(
+                r"^(?:from (?:[a-zA-Z_][a-zA-Z0-9_]*) )?import ([a-zA-Z_][a-zA-Z0-9_]*)",
+                line,
+            ):
                 var_name = match.group(1)
                 line = line + f"\nreturn {var_name}"
 
@@ -809,7 +865,7 @@ def run_shell(args: argparse.Namespace) -> None:
             # Run the function
             try:
                 exec(code, env)
-                func = env['_func']
+                func = env["_func"]
                 try:
                     ret = loop.run_until_complete(func())
 
@@ -831,14 +887,18 @@ def run_shell(args: argparse.Namespace) -> None:
         loop.run_until_complete(bot.close())
 
     # We're now done running the bot, time to clean up and close
-    if bot.config.get('database', {}).get('enabled', False):
+    if bot.config.get("database", {}).get("enabled", False):
         logger.info("Closing database pool")
         try:
             if DatabaseWrapper.pool:
-                loop.run_until_complete(asyncio.wait_for(DatabaseWrapper.pool.close(), timeout=30.0))
+                loop.run_until_complete(
+                    asyncio.wait_for(DatabaseWrapper.pool.close(), timeout=30.0)
+                )
         except asyncio.TimeoutError:
-            logger.error("Couldn't gracefully close the database connection pool within 30 seconds")
-    if bot.config.get('redis', {}).get('enabled', False):
+            logger.error(
+                "Couldn't gracefully close the database connection pool within 30 seconds"
+            )
+    if bot.config.get("redis", {}).get("enabled", False):
         logger.info("Closing redis pool")
         RedisConnection.pool.close()
 
@@ -869,7 +929,7 @@ def run_modify_commands(args: argparse.Namespace) -> None:
     set_default_log_levels(args)
 
     # Load the bot's extensions
-    logger.info('Loading extensions... ')
+    logger.info("Loading extensions... ")
     bot.load_all_extensions()
 
     # Run the bot

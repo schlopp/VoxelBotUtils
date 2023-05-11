@@ -15,7 +15,7 @@ if typing.TYPE_CHECKING:
     from ..custom_context import SlashContext
 
 
-T = typing.TypeVar('T')
+T = typing.TypeVar("T")
 Awai = typing.Awaitable[typing.Callable[..., T]]
 Coro = typing.Coroutine[typing.Any, typing.Any, T]
 MaybeCoro = typing.Union[T, Coro[T], Awai[T]]
@@ -27,14 +27,19 @@ class Option(MenuDisplayable):
     """
 
     def __init__(
-            self,
-            display: typing.Union[str, typing.Callable[[SlashContext], str]],
-            component_display: str = None,
-            converters: typing.Optional[typing.List[Converter]] = None,
-            callback: typing.Union[typing.Callable[[SlashContext, typing.List[typing.Any]], MaybeCoro[None]], Menu] = None,
-            cache_callback: typing.Optional[typing.Callable[[SlashContext, typing.List[typing.Any]], MaybeCoro[None]]] = None,
-            allow_none: bool = False,
-            ):
+        self,
+        display: typing.Union[str, typing.Callable[[SlashContext], str]],
+        component_display: str = None,
+        converters: typing.Optional[typing.List[Converter]] = None,
+        callback: typing.Union[
+            typing.Callable[[SlashContext, typing.List[typing.Any]], MaybeCoro[None]],
+            Menu,
+        ] = None,
+        cache_callback: typing.Optional[
+            typing.Callable[[SlashContext, typing.List[typing.Any]], MaybeCoro[None]]
+        ] = None,
+        allow_none: bool = False,
+    ):
         """
         Attributes:
             display (typing.Union[str, typing.Callable[[commands.SlashContext], str]]): The item
