@@ -58,8 +58,8 @@ class Menu(MenuDisplayable):
     def __init__(
         self,
         *options: Option,
-        display: str = None,
-        component_display: str = None,
+        display: str | None = None,
+        component_display: str | None = None,
     ):
         """
         Args:
@@ -81,8 +81,8 @@ class Menu(MenuDisplayable):
         cog_name: str = "Bot Settings",
         name: str = "settings",
         aliases: typing.List[str] = ["setup"],
-        permissions: typing.List[str] = None,
-        post_invoke: MaybeCoroContextCallable = None,
+        permissions: typing.List[str] | None = None,
+        post_invoke: MaybeCoroContextCallable | None = None,
         guild_only: bool = True,
         **command_kwargs,
     ) -> typing.Type[commands.Cog]:
@@ -96,8 +96,8 @@ class Menu(MenuDisplayable):
         cog_name: str = "Bot Settings",
         name: str = "settings",
         aliases: typing.List[str] = ["setup"],
-        permissions: typing.List[str] = None,
-        post_invoke: MaybeCoroContextCallable = None,
+        permissions: typing.List[str] | None = None,
+        post_invoke: MaybeCoroContextCallable | None = None,
         guild_only: bool = True,
         **command_kwargs,
     ) -> commands.Cog:
@@ -110,8 +110,8 @@ class Menu(MenuDisplayable):
         cog_name: str = "Bot Settings",
         name: str = "settings",
         aliases: typing.List[str] = ["setup"],
-        permissions: typing.List[str] = None,
-        post_invoke: MaybeCoroContextCallable = None,
+        permissions: typing.List[str] | None = None,
+        post_invoke: MaybeCoroContextCallable | None = None,
         guild_only: bool = True,
         **command_kwargs,
     ) -> typing.Union[commands.Cog, typing.Type[commands.Cog]]:
@@ -395,7 +395,8 @@ class MenuIterable(Menu, Option):
         row_text_display: typing.Callable[[Context, dict], str],
         row_component_display: typing.Callable[[Context, dict], str],
         converters: typing.List[Converter],
-        select_sql_args: typing.Callable[[Context], typing.Iterable[typing.Any]] = None,
+        select_sql_args: typing.Callable[[Context], typing.Iterable[typing.Any]]
+        | None = None,
         insert_sql_args: typing.Callable[
             [Context, typing.List[typing.Any]], typing.Iterable[typing.Any]
         ] = None,

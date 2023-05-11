@@ -136,7 +136,9 @@ class OwnerOnly(vbu.Cog, command_attrs={"hidden": True, "add_slash_command": Fal
     @vbu.command(aliases=["pm", "dm", "send"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True, add_reactions=True)
-    async def message(self, ctx: vbu.Context, snowflake: int, *, content: str = None):
+    async def message(
+        self, ctx: vbu.Context, snowflake: int, *, content: str | None = None
+    ):
         """
         DMs a user the given content.
         """
@@ -222,7 +224,7 @@ class OwnerOnly(vbu.Cog, command_attrs={"hidden": True, "add_slash_command": Fal
     @vbu.command(aliases=["evall", "eval"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True)
-    async def ev(self, ctx: vbu.Context, *, content: str = None):
+    async def ev(self, ctx: vbu.Context, *, content: str | None = None):
         """
         Evaluates some Python code.
         """

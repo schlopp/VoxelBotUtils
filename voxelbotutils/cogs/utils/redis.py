@@ -30,13 +30,13 @@ class RedisConnection(object):
                 self.logger.info(payload)
     """
 
-    config: dict = None
-    pool: aioredis.Redis = None
+    config: dict | None = None
+    pool: aioredis.Redis | None = None
     logger: logging.Logger = logging.getLogger("vbu.redis")
-    lock_manager: aioredlock.Aioredlock = None
+    lock_manager: aioredlock.Aioredlock | None = None
     enabled: bool = False
 
-    def __init__(self, connection: aioredis.RedisConnection = None):
+    def __init__(self, connection: aioredis.RedisConnection | None = None):
         """:meta private:"""
 
         self.conn = connection

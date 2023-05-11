@@ -103,13 +103,13 @@ class DatabaseWrapper(object):
         "cursor",
     )
 
-    config: typing.ClassVar[DatabaseConfig] = None  # type: ignore
-    pool: typing.ClassVar[DriverPool] = None  # type: ignore
+    config: typing.ClassVar[DatabaseConfig] | None = None  # type: ignore
+    pool: typing.ClassVar[DriverPool] | None = None  # type: ignore
     logger: logging.Logger = logging.getLogger("vbu.database")
     enabled: typing.ClassVar[bool] = False
     driver: typing.ClassVar[typing.Type[DriverWrapper]]
 
-    def __init__(self, conn=None, *, cursor: DriverConnection = None):
+    def __init__(self, conn=None, *, cursor: DriverConnection | None = None):
         """:meta private:"""
 
         self.conn = conn

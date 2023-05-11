@@ -40,10 +40,10 @@ class Converter(object):
     def __init__(
         self,
         prompt: str,
-        checks: typing.List[Check] = None,
+        checks: typing.List[Check] | None = None,
         converter: AnyConverter = str,
-        components: discord.ui.MessageComponents = None,
-        timeout_message: str = None,
+        components: discord.ui.MessageComponents | None = None,
+        timeout_message: str | None = None,
     ):
         """
         Args:
@@ -82,7 +82,9 @@ class Converter(object):
                 return converter
         return _FakeConverter(converter)
 
-    async def run(self, ctx: commands.SlashContext, messages_to_delete: list = None):
+    async def run(
+        self, ctx: commands.SlashContext, messages_to_delete: list | None = None
+    ):
         """
         Ask the user for an input, run the checks, run the converter, and return. Timeout errors
         *will* be raised here, but they'll propogate all the way back up to the main menu instance,

@@ -37,7 +37,7 @@ class Cog(OriginalCog, typing.Generic[BotT]):
                 c.qualified_name  # "API Commands"
     """
 
-    def __init__(self, bot: BotT, logger_name: str = None):
+    def __init__(self, bot: BotT, logger_name: str | None = None):
         """
         Args:
             bot (Bot): The bot that should be added to the cog.

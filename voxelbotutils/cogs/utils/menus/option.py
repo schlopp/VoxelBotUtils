@@ -29,7 +29,7 @@ class Option(MenuDisplayable):
     def __init__(
         self,
         display: typing.Union[str, typing.Callable[[SlashContext], str]],
-        component_display: str = None,
+        component_display: str | None = None,
         converters: typing.Optional[typing.List[Converter]] = None,
         callback: typing.Union[
             typing.Callable[[SlashContext, typing.List[typing.Any]], MaybeCoro[None]],

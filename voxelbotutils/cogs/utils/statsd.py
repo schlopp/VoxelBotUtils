@@ -51,11 +51,11 @@ class StatsdConnection(object):
     silently if there's no connection to be made.
     """
 
-    config: dict = None
+    config: dict | None = None
     logger: logging.Logger = logging.getLogger("vbu.statsd")
     __slots__ = ("conn",)
 
-    def __init__(self, connection: aiodogstatsd.Client = None):
+    def __init__(self, connection: aiodogstatsd.Client | None = None):
         """:meta private:"""
 
         self.conn = connection

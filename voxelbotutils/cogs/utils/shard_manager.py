@@ -59,7 +59,7 @@ class ShardManagerServer(object):
 
         # Things used by the manager
         self.max_concurrency: int = max_concurrency  #: The maximum number of shards that can connect concurrently.
-        self.server: asyncio.Server = None  #: The shard manager TCP server.
+        self.server: asyncio.Server | None = None  #: The shard manager TCP server.
 
         # Manager keeping track of shards
         self.shards_connecting: typing.List[

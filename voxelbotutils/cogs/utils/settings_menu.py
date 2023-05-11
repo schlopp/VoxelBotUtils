@@ -56,7 +56,7 @@ class SettingsMenuOption(object):
         self,
         ctx: commands.Context,
         display: typing.Union[str, typing.Callable[[commands.Context], str]],
-        converter_args: typing.List[SettingsMenuConverter] = None,
+        converter_args: typing.List[SettingsMenuConverter] | None = None,
         callback: typing.Callable[
             ["SettingsMenuOption", typing.List[typing.Any]], None
         ] = lambda x: None,
@@ -135,7 +135,7 @@ class SettingsMenuOption(object):
         prompt: str,
         asking_for: str,
         converter: commands.Converter,
-        reactions: typing.List[discord.Emoji] = None,
+        reactions: typing.List[discord.Emoji] | None = None,
     ) -> typing.Any:
         """
         Ask the user for some information, convert said information, and then return that converted value.
@@ -347,7 +347,7 @@ class SettingsMenuOption(object):
         cls,
         table_name: str,
         column_name: str,
-        serialize_function: typing.Callable[[typing.Any], typing.Any] = None,
+        serialize_function: typing.Callable[[typing.Any], typing.Any] | None = None,
     ) -> typing.Callable[[typing.Any], None]:
         """
         Return an async method that takes the data given by `convert_prompted_information`, then
@@ -380,7 +380,7 @@ class SettingsMenuOption(object):
         cls,
         table_name: str,
         column_name: str,
-        serialize_function: typing.Callable[[typing.Any], typing.Any] = None,
+        serialize_function: typing.Callable[[typing.Any], typing.Any] | None = None,
     ) -> typing.Callable[[dict], None]:
         """
         Return an async method that takes the data given by `convert_prompted_information`, then
@@ -412,7 +412,7 @@ class SettingsMenuOption(object):
         table_name: str,
         primary_key: str,
         column_name: str,
-        serialize_function: typing.Callable[[typing.Any], typing.Any] = None,
+        serialize_function: typing.Callable[[typing.Any], typing.Any] | None = None,
     ) -> typing.Callable[[dict], None]:
         """
         Return an async method that takes the data given by `convert_prompted_information`, then
@@ -536,7 +536,7 @@ class SettingsMenuOption(object):
         column_name: str,
         cache_key: str,
         database_key: str,
-        serialize_function: typing.Callable[[typing.Any], str] = None,
+        serialize_function: typing.Callable[[typing.Any], str] | None = None,
         original_data_type: type = None,
     ) -> typing.Callable[["SettingsMenu", commands.Context], None]:
         """
@@ -831,7 +831,7 @@ class SettingsMenuIterable(SettingsMenu):
         database_key: str,
         key_display_function: typing.Callable[[typing.Any], str],
         value_display_function: typing.Callable[[typing.Any], str] = str,
-        converters: typing.List[SettingsMenuConverter] = None,
+        converters: typing.List[SettingsMenuConverter] | None = None,
         *,
         iterable_add_callback: typing.Callable[
             ["SettingsMenu", commands.Context], None

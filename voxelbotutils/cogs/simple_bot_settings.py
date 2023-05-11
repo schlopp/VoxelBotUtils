@@ -12,7 +12,7 @@ class BotSettings(vbu.Cog):
     @commands.bot_has_permissions(send_messages=True)
     @commands.guild_only()
     @vbu.checks.is_config_set("database", "enabled")
-    async def prefix(self, ctx: vbu.Context, *, new_prefix: str = None):
+    async def prefix(self, ctx: vbu.Context, *, new_prefix: str | None = None):
         """
         Changes the prefix that the bot uses.
         """

@@ -229,11 +229,11 @@ class Bot(MinimalBot):
     def __init__(
         self,
         config_file: str = "config/config.toml",
-        logger: logging.Logger = None,
+        logger: logging.Logger | None = None,
         activity: discord.BaseActivity = discord.Game(name="Reconnecting..."),
         status: discord.Status = discord.Status.dnd,
         case_insensitive: bool = True,
-        intents: discord.Intents = None,
+        intents: discord.Intents | None = None,
         allowed_mentions: discord.AllowedMentions = discord.AllowedMentions(
             everyone=False
         ),
@@ -459,12 +459,12 @@ class Bot(MinimalBot):
     def get_invite_link(
         self,
         *,
-        client_id: int = None,
-        scope: str = None,
-        response_type: str = None,
-        redirect_uri: str = None,
-        guild_id: int = None,
-        permissions: discord.Permissions = None,
+        client_id: int | None = None,
+        scope: str | None = None,
+        response_type: str | None = None,
+        redirect_uri: str | None = None,
+        guild_id: int | None = None,
+        permissions: discord.Permissions | None = None,
         **kwargs,
     ) -> str:
         """
@@ -650,7 +650,7 @@ class Bot(MinimalBot):
         message: discord.Message,
         valid_users: typing.Tuple[typing.Union[discord.User, discord.Member]] = None,
         *,
-        delete: typing.Tuple[discord.Message] = None,
+        delete: typing.Tuple[discord.Message] | None = None,
         timeout: float = 60.0,
         wait: bool = False,
     ) -> None:
@@ -839,7 +839,7 @@ class Bot(MinimalBot):
             else:
                 self.logger.info(f" * {i}... success")
 
-    async def set_default_presence(self, shard_id: int = None) -> None:
+    async def set_default_presence(self, shard_id: int | None = None) -> None:
         """
         Sets the default presence for the bot as appears in the :class:`config file<BotConfig.presence>`.
         """
@@ -898,7 +898,7 @@ class Bot(MinimalBot):
         # Reset cache items that might need updating
         self._upgrade_chat = None
 
-    async def login(self, token: str = None, *args, **kwargs):
+    async def login(self, token: str | None = None, *args, **kwargs):
         """:meta private:"""
 
         try:
@@ -915,7 +915,7 @@ class Bot(MinimalBot):
                 )
             raise
 
-    async def start(self, token: str = None, *args, **kwargs):
+    async def start(self, token: str | None = None, *args, **kwargs):
         """:meta private:"""
 
         # Say we're starting

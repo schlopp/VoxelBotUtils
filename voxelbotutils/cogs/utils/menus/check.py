@@ -40,9 +40,9 @@ class Check(object):
 
     def __init__(
         self,
-        check: typing.Callable[[discord.Message], bool] = None,
+        check: typing.Callable[[discord.Message], bool] | None = None,
         on_failure: CheckFailureAction = CheckFailureAction.FAIL,
-        fail_message: str = None,
+        fail_message: str | None = None,
     ):
         """
         Attributes:
@@ -79,9 +79,9 @@ class ModalCheck(Check):
 
     def __init__(
         self,
-        check: typing.Callable[[discord.Interaction], bool] = None,
+        check: typing.Callable[[discord.Interaction], bool] | None = None,
         on_failure: CheckFailureAction = CheckFailureAction.FAIL,
-        fail_message: str = None,
+        fail_message: str | None = None,
     ):
         """
         Attributes:

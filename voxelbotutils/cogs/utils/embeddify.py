@@ -22,7 +22,7 @@ class Embeddify:
     A class to handle auto-embeddifying of messages.
     """
 
-    bot: typing.Optional[Bot] = None
+    bot: typing.Optional[Bot] | None = None
 
     @classmethod
     async def send(
